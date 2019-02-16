@@ -10,7 +10,7 @@ contract VolunteersDilemma is Withdrawal {
     uint player_number = 3;
     uint current_players = 0;
     
-    constructor public {
+    constructor() public {
         owner = msg.sender;
     } 
     
