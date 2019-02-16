@@ -1,6 +1,10 @@
 pragma solidity ^0.5.4;
 
-contract VolunteersDilemma {
+import "./Withdrawal.sol";
+//write player payouts to pendingWithdrawal mapping
+// ex: pendingWithdrawal[address of player] = uint amount of payout
+
+contract VolunteersDilemma is Withdrawal {
     address owner;
     uint bet = 1000 wei;
     uint player_number = 3;
