@@ -6,20 +6,24 @@ import "./Withdrawal.sol";
 
 contract VolunteersDilemma is Withdrawal {
     address owner;
-    uint bet = 1000 wei;
-    uint player_number = 3;
-    uint current_players = 0;
+    address[] player_addresses;
+    uint current_players;
+    uint bet;
+    uint player_number;
+    
+    event Results(uint _ignorers, uint _reporters);
     
     constructor() public {
         owner = msg.sender;
+        bet = 1000 wei;
+        player_number = 3;
+        
     } 
     
     struct Player {
         bool reported;
         bool voted;
         address addr;
-        uint payout;
-        bool withdrawn;
     }
 
     
@@ -32,7 +36,14 @@ contract VolunteersDilemma is Withdrawal {
         _;
     }
     
-    function act(bool _reported) public payable new_player {
+    modifier enough_money{
+        require(msg.value==bet);
+        _;
+    }
+    
+    
+    function act(bool _reported) public payable new_player enough_money{
+        player_addresses.push(msg.sender);
         players[msg.sender].voted = true;
         players[msg.sender].reported = _reported;
         players[msg.sender].addr = msg.sender;
@@ -46,18 +57,40 @@ contract VolunteersDilemma is Withdrawal {
     }
     
     function decide_winner() internal {
-        //find out what happened
+        //find out at h whppened
+        uint reporters;
+        uint ignorers;
+        uint shared_pot;
         for (uint i=0; i< player_number; i++){
-            
+            if(players[player_addresses[i]].reported){
+                reporters++;
+            }
+            else{
+                ignorers++;
+            }
         }
-        outcome = {1,2,3}
-        
-        1:
-            everybody wins
-        2:
-            everybody loses
-        3:
-            iterate through each user's payout
-        
+        if (reporters == 0){
+            //transfer money to the mastercontract/bank;
+        }
+        else if (ignorers == 0){
+            for (uint i=0; i< player_number; i++){
+                if (players[player_addresses[i]].reported){
+                    pendingWithdrawal[player_addresses[i]]=bet + (bet/player_number);
+                    //figure out withdrawing from the pot
+                }
+            }
+        }
+        else {
+            for (uint i=0; i< player_number; i++){
+                if (players[player_addresses[i]].reported){
+                    pendingWithdrawal[player_addresses[i]]=(bet/player_number);
+                }
+                else{
+                    shared_pot = (bet/player_number)*(player_number*reporters-reporters);
+                    pendingWithdrawal[player_addresses[i]]+=bet+(shared_pot/(ignorers+1));
+                }
+            }
+        }
     }
 }
+
