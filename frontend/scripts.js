@@ -5,15 +5,32 @@ async function initContract(){
 		"constant": false,
 		"inputs": [
 			{
-				"name": "_post",
-				"type": "string"
+				"name": "_reported",
+				"type": "uint8"
 			}
 		],
-		"name": "post",
+		"name": "act",
 		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
+		"payable": true,
+		"stateMutability": "payable",
 		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "_ignorers",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "_reporters",
+				"type": "uint256"
+			}
+		],
+		"name": "Results",
+		"type": "event"
 	},
 	{
 		"inputs": [],
@@ -22,13 +39,41 @@ async function initContract(){
 		"type": "constructor"
 	},
 	{
-		"constant": true,
+		"constant": false,
 		"inputs": [],
-		"name": "latest_post",
+		"name": "withdraw",
 		"outputs": [
 			{
 				"name": "",
-				"type": "string"
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "check_balance",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "contract_balance",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"payable": false,
@@ -36,8 +81,8 @@ async function initContract(){
 		"type": "function"
 	}
 ]
-  address = '0xe471b5cf7042b3187a99dbf0cc33530e93c68086'
-  posts_contract = new web3.eth.Contract(abi,address);
+  address = '0x100E7Bb2f0B70388FA7E161f337b613E5885083b'
+  game_contract = new web3.eth.Contract(abi,address);
 }
 
 async function update_table(){
@@ -51,7 +96,7 @@ async function update_table(){
   ignorer_cell.innerHTML = 2
 }
 
-async function submit_post(){
+async function submit_action(){
   var action;
   if (document.getElementById('ignore').checked) {
   action = document.getElementById('ignore').value;
@@ -59,8 +104,7 @@ async function submit_post(){
   if (document.getElementById('report').checked) {
   action = document.getElementById('report').value;
   }
-  console.log(action);
-  // const user_addresses = await web3.eth.getAccounts();
-  // main_address=user_addresses[0];
-  // await posts_contract.methods.post(post).send({"from":user_addresses[0]});
+  const user_addresses = await web3.eth.getAccounts();
+  main_address=user_addresses[0];
+  await game_contract.methods.act(action).send({"from":user_addresses[0],"value":1000});
 }
