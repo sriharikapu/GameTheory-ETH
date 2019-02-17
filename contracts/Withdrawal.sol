@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4
+pragma solidity ^0.5.4;
 
 contract Withdrawal {
     mapping(address => uint) internal pendingWithdrawal;
@@ -10,6 +10,10 @@ contract Withdrawal {
             msg.sender.transfer(amount);
         }
         return true;
+    }
+    
+    function check_balance() public view returns(uint){
+        return pendingWithdrawal[msg.sender];
     }
 
 }

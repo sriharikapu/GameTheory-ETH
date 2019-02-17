@@ -1,0 +1,48 @@
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src='web3.min.js'}></script>
+    <script src='scripts.js'></script>
+    <title></title>
+  </head>
+  <body>
+    <h1 id='page_title'>Welcome to the Volunteer's Dilemma</h1>
+    <h2 id='text_header'>A game of cooperation.</h2>
+
+    <form id = "player_action" >
+    <p>Select your choice of action:</p>
+    <div>
+      <input type="radio" id="ignore" name="action_choice" value="2"checked>
+      <label for="ignore">Ignore</label>
+      <input type="radio" id="report" name="action_choice" value="1">
+      <label for="report">Report</label>
+    </div>
+    <div>
+      <button type="button" name="submit_action_button" id="submit_action_button">Submit Action</button>
+    </div>
+    </form>
+
+    <p>Last 10 game results:</p>
+    <table id = 'latest_results' width = 500 border = 2>
+      <thead>
+        <th>Reporters</th>
+        <th>Ignorers</th>
+      </thead>
+    </table>
+    <button type="button" id="update_table_button">Update table</button>
+    <script type="text/javascript">
+
+      $(document).ready(function(){
+        initContract();
+      })
+
+      $('#update_table_button').click(function(){
+        update_table();
+      })
+
+      $('#submit_action_button').click(function(){
+        submit_post();
+      })
+    </script>
+  </body>
