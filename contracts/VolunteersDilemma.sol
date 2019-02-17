@@ -6,7 +6,7 @@ import "./Withdrawal.sol";
 
 contract VolunteersDilemma is Withdrawal {
     address owner;
-    address[3] player_addresses
+    address[3] player_addresses;
     uint current_player;
     uint bet;
     uint player_total;
@@ -23,6 +23,10 @@ contract VolunteersDilemma is Withdrawal {
     mapping (address => uint8) players_vote;
     
 
+    modifier owner_only {
+        require(msg.sender==owner,"Owner only function");
+        _;
+    }
     modifier new_player {
         //make sure the player is new
         require (players_vote[msg.sender]==0);
@@ -34,10 +38,14 @@ contract VolunteersDilemma is Withdrawal {
         _;
     }
     
+    function contract_balance() public view owner_only returns(uint){
+        return address(this).balance;
+    }
+    
     
     function act(uint8 _reported) public payable new_player enough_money{
         players_vote[msg.sender] = _reported; // reported should be 1 or 2
-        player_addresses[current_player] = msg.sender
+        player_addresses[current_player] = msg.sender;
         //check if end of voting period is here
         //currently based on max player reached
         current_player++;
@@ -54,7 +62,7 @@ contract VolunteersDilemma is Withdrawal {
 
         //figure out score
         for (uint i=0; i < player_total; i++){
-            if(players_vote[player_addresses[i]].reported){
+            if(players_vote[player_addresses[i]] == 1) {
                 reporters++;
             }
             else{
@@ -64,38 +72,42 @@ contract VolunteersDilemma is Withdrawal {
 
         //distribute winnings based on score
         if (reporters == 0){
-            //transfer money to the mastercontract/bank;
-            reset_game()
+            //no value transfer, contract takes all
+            reset_game();
         }
         else if (ignorers == 0){
+            //team win! payout more than total pay in
             for (uint i=0; i< player_total; i++){
-                if (players_vote[player_addresses[i]].reported){
-                    pendingWithdrawal[player_addresses[i]]=bet + (bet/player_total);
-                    //figure out withdrawing from the pot
+                if (players_vote[player_addresses[i]] == 1){
+                    pendingWithdrawal[player_addresses[i]]+= bet + (bet/player_total);
+                    //incentive team win more by making the payout proportionate to the contract bank
                 }
             }
-            reset_game()
+            reset_game();
         }
         else {
+            //booo its a mixed bag
+            //iterate through each and assign payouts to ledger
             for (uint i=0; i< player_total; i++){
-                if (players_vote[player_addresses[i]].reported){
-                    pendingWithdrawal[player_addresses[i]]=(bet/player_total);
+                if (players_vote[player_addresses[i]] == 1 ){
+                    pendingWithdrawal[player_addresses[i]] += (bet/player_total);
                 }
                 else{
                     shared_pot = (bet/player_total)*(player_total*reporters-reporters);
-                    pendingWithdrawal[player_addresses[i]]+=bet+(shared_pot/(ignorers+1));
+                    pendingWithdrawal[player_addresses[i]] += bet + (shared_pot/(ignorers + 1));
                 }
             }
-            reset_game()
+            reset_game();
         }
         //delete players_vote[address]
     }
 
-    function reset_game() {
+    function reset_game() internal {
         current_player = 0;
         for (uint i=0; i < player_total; i++){
             delete players_vote[player_addresses[i]];
         }
     }
+    
 }
 
