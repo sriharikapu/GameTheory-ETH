@@ -15,7 +15,7 @@ contract VolunteersDilemma is Withdrawal {
     
     constructor() public {
         owner = msg.sender;
-        bet = 1000 wei;
+        bet = 1000 szabo;
         player_total = 5;
         current_player = 0;
     } 

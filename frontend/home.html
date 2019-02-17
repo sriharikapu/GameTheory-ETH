@@ -10,12 +10,22 @@
     <h1 id='page_title'>Welcome to the Volunteer's Dilemma</h1>
     <h2 id='text_header'>A game of cooperation.</h2>
 
+    <p>The game gives you a choice to report or ignore a crime and bet money on your choice. Current bet is 1000 szabo. If you ignore and everyone in the game ignores (currently 5 players), everybody loses their bet. If everyone reports the crime, then everybody gets their bet back and then some on top (1/5 in addition). However, if there is a mixed bag, then reporters only get a portion of their bet (1/5), and the rest is split between ignorers and the contract.</p>
+    <p>Transactions will be private after implementing submarine sends</p>
+    <table id = 'balance_table' width = 250 border = 1>
+      <thead>
+        <th>Current Balance (szabo)</th>
+      </thead>
+    </table>
+    <div>
+      <button type="button" name="withdraw_button" id="withdraw_button">Withdraw</button>
+    </div>
     <form id = "player_action" >
     <p>Select your choice of action:</p>
     <div>
-      <input type="radio" id="ignore" name="action_choice" value="2"checked>
+      <input type="radio" id="ignore" name="action_choice" value=2 checked>
       <label for="ignore">Ignore</label>
-      <input type="radio" id="report" name="action_choice" value="1">
+      <input type="radio" id="report" name="action_choice" value=1>
       <label for="report">Report</label>
     </div>
     <div>
@@ -26,23 +36,21 @@
     <p>Last 10 game results:</p>
     <table id = 'latest_results' width = 500 border = 2>
       <thead>
-        <th>Reporters</th>
         <th>Ignorers</th>
+        <th>Reporters</th>
       </thead>
     </table>
-    <button type="button" id="update_table_button">Update table</button>
     <script type="text/javascript">
 
       $(document).ready(function(){
         initContract();
       })
 
-      $('#update_table_button').click(function(){
-        update_table();
-      })
-
       $('#submit_action_button').click(function(){
         submit_action();
+      })
+      $('#withdraw_button').click(function(){
+        withdraw_funds();
       })
     </script>
   </body>
